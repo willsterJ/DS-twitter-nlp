@@ -5,13 +5,14 @@ import java.io.PrintWriter;
 import java.util.*;
 
 enum whichHash {	// define enum to be used for hashing
-	At, Hashtag;
+	At, Hashtag, Entity;
 }
 
 public class TopMentions {
 	List<String> records; // records obtained from input
 	HashMap<String, Integer> ATMentionsHash;  // hash storing @ mentions
 	HashMap<String, Integer> HashtagMentionsHash;  // hash storing # mentions
+	public static HashMap<String, Integer> EntityHash = new HashMap<String, Integer>();
 
 	public TopMentions(List<String> records) {
 		this.records = records;
@@ -22,9 +23,12 @@ public class TopMentions {
 		HashtagMentionsHash = sortHashTables(HashtagMentionsHash);
 		ATMentionsHash = getTopAT(20);
 		HashtagMentionsHash = getTopHtag(20);
-
 	}
-
+	
+	public TopMentions(List<String> entityList, String command) {
+		generateEntities(entityList);
+	}
+	
 	// method to search list of records for @ or #
 	private void searchMentions() {
 		for (int i = 0; i < records.size(); i++) {
@@ -61,13 +65,20 @@ public class TopMentions {
 			} else { // if not, create new entry
 				ATMentionsHash.put(mention, 1);
 			}
-		} else {
+		} else if (hashChoice.equals(whichHash.Hashtag)) {
 			if (HashtagMentionsHash.containsKey(mention)) {
 				int val = HashtagMentionsHash.get(mention) + 1;
 				HashtagMentionsHash.put(mention, val);
 			} else {
 				HashtagMentionsHash.put(mention, 1);
 			}
+		}
+		else {
+			if (EntityHash.containsKey(mention)) {
+				int val = EntityHash.get(mention) + 1;
+				EntityHash.put(mention, val);
+			} else
+				EntityHash.put(mention, 1);
 		}
 	}
 
@@ -89,7 +100,7 @@ public class TopMentions {
 	}
 
 	// method to reverse-sort the hash table
-	private HashMap<String, Integer> sortHashTables(HashMap<String, Integer> hash) {
+	public HashMap<String, Integer> sortHashTables(HashMap<String, Integer> hash) {
 		List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(hash.entrySet());
 		// Sort the list
 		hashComparator hashCompare = new hashComparator();
@@ -143,6 +154,23 @@ public class TopMentions {
 			}
 			writer.close();
 		} catch (Exception e) {
+		}
+	}
+	
+	// method to generate entities hashmap
+	private void generateEntities(List<String> list) {
+		for (String s : list) {
+			addToHashMap(s, whichHash.Entity);
+		}
+	}
+	// print top entity mentions
+	public static void printTopEntities() {
+		int count = 0;
+		Iterator<Map.Entry<String, Integer>> itr = EntityHash.entrySet().iterator();
+		while (itr.hasNext() && count < 10) {
+			Map.Entry<String, Integer> entry = itr.next();
+			System.out.println(entry.getKey() + ": " + entry.getValue());
+			count++;
 		}
 	}
 

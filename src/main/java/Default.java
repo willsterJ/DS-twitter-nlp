@@ -2,17 +2,23 @@ import java.util.*;
 
 import org.apache.log4j.BasicConfigurator;
 
+import edu.stanford.nlp.parser.nndep.DependencyParser;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.util.logging.RedwoodConfiguration;
 
 public class Default {
-
+	
+	// functions ---------------------------------------------------------------------------
+	
+	// obtain top @ and # mentions
 	public static void obtainTop20Mentions(FileHandler test) {
 		TopMentions top = new TopMentions(test.records);
 		top.writeToFile(top.ATMentionsHash, "./top@.txt");
 		top.writeToFile(top.HashtagMentionsHash, "./top#.txt");
 	}
 	
+	// get top 20 4,3,2,1 ngrams
 	public static void report20MostFrequentNGram(FileHandler file) {
 		List<String> temp = null;
 		NGram ngram = null;
@@ -42,6 +48,7 @@ public class Default {
         pipeline = new StanfordCoreNLP(props);
 	}
 	
+	// method to find patterns and extract ngrams 
 	// You must manually add patterns to a set as shown below
 	public static void POSPattern(FileHandler file) {
 		List<HashSet<String>> patterns = new ArrayList<HashSet<String>>();
@@ -59,7 +66,7 @@ public class Default {
 		CoreNLPHandler handler = null;
 		NGram ngram = null;
 		for (int i=0; i< file.records.size(); i++) {
-			handler = new CoreNLPHandler(file.records.get(i), pipeline);
+			handler = new CoreNLPHandler(file.records.get(i), pipeline, "");
 			ngram = new NGram(4, handler.outputtokenList, patterns);
 		}
 		
@@ -70,6 +77,35 @@ public class Default {
 		NGram.printTopics(NGram.ThreeGramHash, 10);
 		NGram.printTopics(NGram.FourGramHash, 10);
 	}
+	
+	// method to do dependency parsing
+	public static void dependencyParser(FileHandler file) {
+		String modelPath = DependencyParser.DEFAULT_MODEL;
+		String taggerPath = "edu/stanford/nlp/models/pos-tagger/english-left3words/english-left3words-distsim.tagger";
+
+		MaxentTagger tagger = new MaxentTagger(taggerPath);
+		DependencyParser parser = DependencyParser.loadFromModelFile(modelPath);
+		
+		CoreNLPHandler handler = null;
+		
+		handler = new CoreNLPHandler(true, file.records.get(0), tagger, parser);
+		handler = new CoreNLPHandler(true, file.records.get(1), tagger, parser);
+	}
+	
+	// method to get top named-entities
+	public static void topEntities(FileHandler file) {
+		CoreNLPHandler handler = null;
+		TopMentions entities = null;
+		NGram ngram = null;
+		for (int i=0; i< file.records.size(); i++) {
+			handler = new CoreNLPHandler(file.records.get(i), pipeline, "entities");
+			entities = new TopMentions(handler.entityList, "entities");
+		}
+		TopMentions.EntityHash = entities.sortHashTables(TopMentions.EntityHash);
+		TopMentions.printTopEntities();
+	}
+	
+	// main-------------------------------------------------------------------------------
 	
 	public static void main(String[] args) {
 		BasicConfigurator.configure(); // setup for Stanford CoreNLP to work
@@ -82,9 +118,11 @@ public class Default {
 		//obtainTop20Mentions(file);
 		//report20MostFrequentNGram(file);
 		
-		System.out.println("verb noun");
+		//System.out.println("verb noun");
 		initializeCoreNLP();
-		POSPattern(file);
+		//POSPattern(file);
+		//dependencyParser(file);
+		topEntities(file);
 		
 		
 		
