@@ -51,8 +51,8 @@ public class Default {
 		HashSet<String> setVerbs = new HashSet<String>(Arrays.asList("VB", "VBD", "VBG", "VBN", "VBP", "VBZ"));
 		HashSet<String> setAdverbs = new HashSet<String>(Arrays.asList("RB", "RBR", "RBS"));
 		//patterns.add(setAdjectives);
-		//patterns.add(setAdverbs);
-		patterns.add(setNouns);
+		patterns.add(setAdverbs);
+		//patterns.add(setNouns);
 		patterns.add(setVerbs);
 		
 		CoreNLPHandler handler = null;
@@ -81,7 +81,7 @@ public class Default {
 		//obtainTop20Mentions(file);
 		//report20MostFrequentNGram(file);
 		
-		System.out.println("noun verb");
+		System.out.println("adverb verb");
 		initializeCoreNLP();
 		POSPattern(file);
 		
