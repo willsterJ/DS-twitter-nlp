@@ -96,7 +96,25 @@ public class Default {
 	public static void topEntities(FileHandler file) {
 		CoreNLPHandler handler = null;
 		TopMentions entities = null;
-		NGram ngram = null;
+		for (int i=0; i< file.records.size(); i++) {
+			handler = new CoreNLPHandler(file.records.get(i), pipeline, "entities");
+			entities = new TopMentions(handler.entityList, "entities");
+		}
+		TopMentions.EntityHash = entities.sortHashTables(TopMentions.EntityHash);
+		TopMentions.printTopEntities();
+	}
+	
+	// top named-entities, but with sentiments
+	public static void topEntitiesWithSentiments(FileHandler file, int sentiment) {
+		file.filterRecordsBySentiment(sentiment);
+		CoreNLPHandler handler = null;
+		TopMentions entities = null;
+		System.out.println("~~~~~~~~~~~~~~Top Entities by sentiment=" + sentiment + "~~~~~~~~~~~~~~~~~");
+		
+		if (file.records.size() == 0) {
+			System.out.println("\n ERROR: Not enough records with that sentiment");
+			return;
+		}
 		for (int i=0; i< file.records.size(); i++) {
 			handler = new CoreNLPHandler(file.records.get(i), pipeline, "entities");
 			entities = new TopMentions(handler.entityList, "entities");
@@ -122,8 +140,8 @@ public class Default {
 		initializeCoreNLP();
 		//POSPattern(file);
 		//dependencyParser(file);
-		topEntities(file);
-		
+		//topEntities(file);
+		topEntitiesWithSentiments(file, 0);
 		
 		
 	}
