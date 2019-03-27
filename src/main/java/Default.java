@@ -51,9 +51,9 @@ public class Default {
 		HashSet<String> setVerbs = new HashSet<String>(Arrays.asList("VB", "VBD", "VBG", "VBN", "VBP", "VBZ"));
 		HashSet<String> setAdverbs = new HashSet<String>(Arrays.asList("RB", "RBR", "RBS"));
 		//patterns.add(setAdjectives);
-		patterns.add(setAdverbs);
+		//patterns.add(setAdverbs);
+		patterns.add(setNouns);
 		patterns.add(setVerbs);
-		//patterns.add(setNouns);
 		
 		CoreNLPHandler handler = null;
 		NGram ngram = null;
