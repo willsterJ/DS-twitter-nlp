@@ -141,7 +141,7 @@ public class Default {
 		//POSPattern(file);
 		//dependencyParser(file);
 		//topEntities(file);
-		topEntitiesWithSentiments(file, 0);
+		topEntitiesWithSentiments(file, 4);
 		
 		
 	}
